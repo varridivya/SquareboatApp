@@ -17,7 +17,7 @@ import BottomSheet from 'react-native-simple-bottom-sheet';
 
 export default function ScreenOne({ onPress }) {
     const [news, setNews] = useState([]);
-
+    const [data, setData] = useState([]);
     const panelRef = useRef(null);
     const [search, setSearch] = useState('');
     const [filteredDataSource, setFilteredDataSource] = useState([]);
@@ -25,7 +25,13 @@ export default function ScreenOne({ onPress }) {
     const [isOffline, setOfflineStatus] = useState(false);
 
     const obj = [...new Map(news.map(item => [JSON.stringify(item.source.name), item])).values()];
+    //console.log(obj);
     const [checked, setChecked] = useState(false);
+    const [checked1, setChecked1] = useState(false);
+    const [checked2, setChecked2] = useState(false);
+    const [checked3, setChecked3] = useState(false);
+    const [checked4, setChecked4] = useState(false);
+
 
     useEffect(() => {
         const removeNetInfoSubscription = NetInfo.addEventListener((state) => {
@@ -86,11 +92,52 @@ export default function ScreenOne({ onPress }) {
             </Button>
         </View>
     );
+    let filterData = [];
+    const onChecked = () => {
+        // setChecked({ ...checked, [event.target.name]: event.target.checked });
+        if (checked === true) {
+            // filterData = [...filterData, 'The Verge'];
+            filterData.push('New York Times');
+            setData(filterData)
+            alert('clicked')
 
-    const onChecked = (event) => {
-        setChecked({ ...checked, [event.target.name]: event.target.checked });
-        console.log('checkes', checked);
-    };
+        }
+        if (checked1 === true) {
+            // filterData = [...filterData, 'ESPN'];
+            filterData.push('ESPN');
+            setData(filterData)
+
+
+        }
+        else {
+            filterData.pop('ESPN');
+            setData(filterData)
+        }
+        if (checked2 === true) {
+            // filterData = [...filterData, 'CNN'];
+            filterData.push('CNN');
+            setData(filterData)
+
+            console.log('dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', filterData);
+        }
+        if (checked3 === true) {
+            // filterData = [...filterData, 'Yahoo Entertainment'];
+            filterData.push('Yahoo Entertainment');
+            setData(filterData)
+        }
+        if (checked4 === true) {
+            // filterData = [...filterData, 'Yahoo Entertainment'];
+            filterData.push('CNBC');
+            setData(filterData)
+        }
+    }
+    console.log('dataaa', data)
+
+    let checkedItem = news.filter(item => data.includes(item.source.name));
+
+    const handleToggle = () => {
+        panelRef.current.togglePanel();
+    }
 
     return (
 
@@ -121,7 +168,24 @@ export default function ScreenOne({ onPress }) {
                     </View>
                     {filteredDataSource.length === 0 ? <View style={styles.notFound}><Text>No results Found</Text></View> :
                         <ScrollView>
-                            {filteredDataSource.map(item => (
+                            {data.length > 0 ? checkedItem.map(item => (
+                                < View key={item.key} style={styles.cardStyle} >
+                                    <View style={styles.viewStyle}>
+                                        <View style={styles.viewStyle1}>
+                                            <TouchableOpacity
+                                                onPress={onPress}>
+                                                <Text style={styles.item}>Source: {item.source.name}</Text>
+                                                <Text numberOfLines={5} style={styles.item}>{item.title}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <Image
+                                            source={{ uri: item.urlToImage }}
+                                            style={styles.imageStyle}
+                                        />
+
+                                    </View>
+                                </View>
+                            )) : filteredDataSource.map(item => (
                                 < View key={item.key} style={styles.cardStyle} >
                                     <View style={styles.viewStyle}>
                                         <View style={styles.viewStyle1}>
@@ -140,12 +204,13 @@ export default function ScreenOne({ onPress }) {
                                 </View>
                             ))}
 
+
                         </ScrollView>
 
                     }
                     <TouchableOpacity
                         activeOpacity={0.7}
-                        onPress={() => panelRef.current.togglePanel()}
+                        onPress={handleToggle}
                         style={styles.touchableOpacityStyle}>
                         <Image
                             source={filterBlue}
@@ -158,19 +223,51 @@ export default function ScreenOne({ onPress }) {
                         </Text>
 
                         <ScrollView>
-                            {obj.map(item => (
-                                <CheckBox
-                                    title={item.source.name}
-                                    containerStyle={styles.checkBoxStyle}
-                                    checked={checked}
-                                    onPress={onChecked}
-                                />
+                            {/* {obj.map(item => ( */}
+                            {/* // <CheckBox
+                                //     title={item.source.name}
+                                //     //title='The Verge'
+                                //     containerStyle={styles.checkBoxStyle}
+                                //     checked={checked}
+                                //     onChecked={() => setChecked(!checked)}
+                                //     onPress={(e) => handleCheckbox(item.source.name, e)}
+                                // /> */}
+                            <CheckBox
+                                title='New York Times'
+                                containerStyle={styles.checkBoxStyle}
+                                checked={checked}
+                                onPress={() => setChecked(!checked)}
+                            />
+                            <CheckBox
+                                title='ESPN'
+                                containerStyle={styles.checkBoxStyle}
+                                checked={checked1}
+                                onPress={() => setChecked1(!checked1)}
+                            />
+                            <CheckBox
+                                title='CNN'
+                                containerStyle={styles.checkBoxStyle}
+                                checked={checked2}
+                                onPress={() => setChecked2(!checked2)}
+                            />
+                            <CheckBox
+                                title='Yahoo Entertainment'
+                                containerStyle={styles.checkBoxStyle}
+                                checked={checked3}
+                                onPress={() => setChecked3(!checked3)}
+                            />
+                            <CheckBox
+                                title='CNBC'
+                                containerStyle={styles.checkBoxStyle}
+                                checked={checked4}
+                                onPress={() => setChecked4(!checked4)}
+                            />
 
 
-                            ))}
+                            {/* // ))} */}
                         </ScrollView>
 
-                        <TouchableOpacity style={styles.appButtonContainer} onPress={() => checked ? alert('News Sourceshas been selected successfully') : alert('No filter is selected')}>
+                        <TouchableOpacity style={styles.appButtonContainer} onPress={onChecked}>
                             <Text style={styles.appButtonText}>Apply</Text>
                         </TouchableOpacity>
 
@@ -284,6 +381,4 @@ const styles = StyleSheet.create({
         borderRadius: 0,
     },
     notFound: { alignItems: 'center', flex: 1 },
-
-
 });
